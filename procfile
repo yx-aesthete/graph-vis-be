@@ -1,1 +1,1 @@
-web: gunicorn app:app --chdir graph-vis-be
+web: gunicorn app:app
