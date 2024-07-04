@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: BuzzyBeeBackendApp
+    env: python
+    plan: free
+    buildCommand: ./render-build.sh
+    startCommand: gunicorn app:app
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://buzzybeebackendapp.azurewebsites.net
+      - key: PORT
+        value: 5001
