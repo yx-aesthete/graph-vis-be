@@ -20,8 +20,6 @@ REACT_APP_API_URL = os.environ.get(
     "REACT_APP_API_URL", "http://127.0.0.1:5001")
 port = int(os.environ.get("PORT", 5001))
 
-# Welcome route
-
 
 @app.route("/")
 def welcome():
