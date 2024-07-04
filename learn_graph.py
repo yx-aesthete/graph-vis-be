@@ -1,6 +1,7 @@
+import pydot
 import random
-from models import GraphDTO, NodeDTO, EdgeDTO
 import networkx as nx
+from models import GraphDTO, NodeDTO, EdgeDTO
 
 
 def generate_random_build_graph(num_nodes: int, num_edges: int = None, connectivity: str = "random", **kwargs) -> GraphDTO:
@@ -45,20 +46,19 @@ def generate_random_build_graph(num_nodes: int, num_edges: int = None, connectiv
                 existing_edges.add((edge[1], edge[0]))
 
     graph = GraphDTO(nodes=nodes, edges=edges)
-
     return graph
 
 
-def convert_to_networkx(graph_dto):
+def convert_to_networkx(graph_dto: GraphDTO) -> nx.Graph:
     G = nx.Graph()
     for node in graph_dto.nodes:
-        G.add_node(node.id)
+        G.add_node(node.id, x=node.x, y=node.y)
     for edge in graph_dto.edges:
         G.add_edge(edge.source, edge.target)
     return G
 
 
-def get_graph_formats(graph_dto):
+def get_graph_formats(graph_dto: GraphDTO) -> dict:
     G = convert_to_networkx(graph_dto)
 
     # Adjacency List
@@ -68,10 +68,10 @@ def get_graph_formats(graph_dto):
     # Adjacency Matrix
     adjacency_matrix = nx.adjacency_matrix(G).todense().tolist()
 
-    # DOT format
+    # DOT format using pydot
     try:
-        dot_format = nx.drawing.nx_agraph.to_agraph(G).to_string()
-    except ImportError as e:
+        dot_format = nx.nx_pydot.to_pydot(G).to_string()
+    except Exception as e:
         dot_format = str(e)
 
     # GML format
@@ -88,10 +88,8 @@ def get_graph_formats(graph_dto):
         "graphml": graphml_format
     }
 
-# Ensuring graph connectivity
 
-
-def check_graph_connectivity(nodes, edges):
+def check_graph_connectivity(nodes: list, edges: list) -> bool:
     adj_list = {node.id: [] for node in nodes}
     for edge in edges:
         adj_list[edge.source].append(edge.target)
@@ -109,9 +107,3 @@ def check_graph_connectivity(nodes, edges):
 
     dfs(0)
     return len(visited) == len(nodes)
-
-
-# Example usage:
-num_nodes = 48
-num_edges = 30
-graph = generate_random_build_graph(num_nodes, num_edges)

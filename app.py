@@ -1,17 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
-from graph_algorithms_v1 import (
-    generate_bfs_sequence_v1,
-    generate_dfs_sequence_v1,
-    generate_random_tree_graph
-)
-from learn_graph import (
-    generate_random_build_graph,
-    get_graph_formats
-)
+import networkx as nx
 from graph_algorithms import generate_traversal_path
-from models import GraphDTO
+from graph_algorithms_v1 import generate_bfs_sequence_v1, generate_dfs_sequence_v1, generate_random_tree_graph
+from learn_graph import generate_random_build_graph, get_graph_formats
+from models import GraphDTO, NodeDTO, EdgeDTO
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -71,7 +65,8 @@ def generate_random_graph_endpoint():
         num_edges = data.get("num_edges", None)
         connectivity = data.get("connectivity", "random")
         additional_params = data.get("additional_params", {})
-        print(f"Received request to generate graph with {num_nodes} nodes, {num_edges} edges, and {connectivity} connectivity")
+        print(f"Received request to generate graph with {num_nodes} nodes, {
+              num_edges} edges, and {connectivity} connectivity")
         graph = generate_random_build_graph(
             num_nodes, num_edges, connectivity, **additional_params)
         graph_formats = get_graph_formats(graph)
