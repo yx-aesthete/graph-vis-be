@@ -5,7 +5,7 @@ from models import GraphDTO, NodeDTO, EdgeDTO
 
 
 def generate_random_build_graph(num_nodes: int, num_edges: int = None, connectivity: str = "random", **kwargs) -> GraphDTO:
-    nodes = [NodeDTO(id=i, x=0, y=0) for i in range(num_nodes)]
+    nodes = [NodeDTO(id=i) for i in range(num_nodes)]
     edges = []
 
     if num_edges is None:
@@ -52,7 +52,7 @@ def generate_random_build_graph(num_nodes: int, num_edges: int = None, connectiv
 def convert_to_networkx(graph_dto: GraphDTO) -> nx.Graph:
     G = nx.Graph()
     for node in graph_dto.nodes:
-        G.add_node(node.id, x=node.x, y=node.y)
+        G.add_node(node.id)
     for edge in graph_dto.edges:
         G.add_edge(edge.source, edge.target)
     return G

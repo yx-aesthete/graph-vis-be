@@ -5,8 +5,6 @@ from typing import List
 
 class NodeDTO(BaseModel):
     id: int
-    x: float = 0.0
-    y: float = 0.0
 
 
 class EdgeDTO(BaseModel):
