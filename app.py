@@ -71,8 +71,7 @@ def generate_random_graph_endpoint():
         num_edges = data.get("num_edges", None)
         connectivity = data.get("connectivity", "random")
         additional_params = data.get("additional_params", {})
-        print(f"Received request to generate graph with {num_nodes} nodes, {
-              num_edges} edges, and {connectivity} connectivity")
+        print(f"Received request to generate graph with {num_nodes} nodes, {num_edges} edges, and {connectivity} connectivity")
         graph = generate_random_build_graph(
             num_nodes, num_edges, connectivity, **additional_params)
         graph_formats = get_graph_formats(graph)
