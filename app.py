@@ -20,7 +20,12 @@ REACT_APP_API_URL = os.environ.get(
     "REACT_APP_API_URL", "http://127.0.0.1:5001")
 port = int(os.environ.get("PORT", 5001))
 
-# traversal first approach hard to delete but will do ultimately
+# Welcome route
+
+
+@app.route("/")
+def welcome():
+    return "Welcome to GraphGen BE"
 
 
 @app.route("/traversal/bfs", methods=["POST"])
@@ -59,8 +64,6 @@ def generate_random_tree_graph_endpoint():
         print(f"Error in generate_random_tree_graph: {e}")
         return jsonify({"error": str(e)}), 500
 
-
-# the nice one starts here
 
 @app.route("/generate_random_build_graph", methods=["POST"])
 def generate_random_graph_endpoint():
@@ -105,5 +108,5 @@ def get_traversal():
         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=port)
