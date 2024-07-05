@@ -2,6 +2,8 @@
 from collections import deque
 import heapq
 import networkx as nx
+import random
+import numpy as np
 
 
 def generate_bfs_sequence(graph, start_node):
@@ -132,13 +134,65 @@ def generate_min_cut_max_flow(graph, source, sink):
         "min_cut_edges": min_cut_edges
     }
 
+# Nearest Neighbor Algorithm for TSP
+
+
+def nearest_neighbor_algorithm(distances):
+    num_cities = distances.shape[0]
+    unvisited = list(range(num_cities))
+    path = [unvisited.pop(0)]
+    while unvisited:
+        last_city = path[-1]
+        next_city = min(unvisited, key=lambda city: distances[last_city, city])
+        path.append(next_city)
+        unvisited.remove(next_city)
+    return path
+
+# Simulated Annealing Algorithm for TSP
+
+
+def simulated_annealing(distances, num_cities, initial_temperature, cooling_rate):
+    def total_distance(path):
+        return sum(distances[path[i], path[i + 1]] for i in range(num_cities - 1)) + distances[path[-1], path[0]]
+
+    def get_neighbor(path):
+        i, j = random.sample(range(num_cities), 2)
+        path[i], path[j] = path[j], path[i]
+        return path
+
+    current_path = list(range(num_cities))
+    random.shuffle(current_path)
+    current_distance = total_distance(current_path)
+    best_path = current_path[:]
+    best_distance = current_distance
+
+    temperature = initial_temperature
+    progress = [best_distance]
+
+    while temperature > 1:
+        new_path = get_neighbor(current_path[:])
+        new_distance = total_distance(new_path)
+
+        if new_distance < current_distance or random.random() < np.exp((current_distance - new_distance) / temperature):
+            current_path, current_distance = new_path, new_distance
+
+        if new_distance < best_distance:
+            best_path, best_distance = new_path, new_distance
+
+        temperature *= cooling_rate
+        progress.append(best_distance)
+
+    return best_path
+
 
 ALGORITHMS = {
     "bfs": generate_bfs_sequence,
     "dfs": generate_dfs_sequence,
     "dijkstra": generate_dijkstra_sequence,
     "a_star": generate_a_star_sequence,
-    "min_cut_max_flow": generate_min_cut_max_flow
+    "min_cut_max_flow": generate_min_cut_max_flow,
+    "nearest_neighbor": nearest_neighbor_algorithm,
+    "simulated_annealing": simulated_annealing
 }
 
 
@@ -148,5 +202,11 @@ def generate_traversal_path(graph, start_node, algorithm, goal_node=None):
 
     if algorithm in ["a_star", "min_cut_max_flow"] and goal_node is not None:
         return ALGORITHMS[algorithm](graph, start_node, goal_node)
+    elif algorithm in ["nearest_neighbor", "simulated_annealing"]:
+        distances = nx.to_numpy_matrix(graph)
+        if algorithm == "nearest_neighbor":
+            return ALGORITHMS[algorithm](distances)
+        else:
+            return ALGORITHMS[algorithm](distances, len(graph.nodes), 1000, 0.995)
     else:
         return ALGORITHMS[algorithm](graph, start_node)
